@@ -74,6 +74,40 @@ section h3 {
   margin-bottom: 8px;
 }
 
+.participants-header {
+  user-select: none;
+  transition: background-color 0.2s;
+  padding: 5px;
+  border-radius: 3px;
+  margin: -5px;
+}
+
+.participants-header:hover {
+  background-color: #e8f0fe;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.2s;
+  color: #1565c0;
+  font-weight: bold;
+}
+
+.participants-list {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+  }
+}
+
 .form-group {
   margin-bottom: 15px;
 }
