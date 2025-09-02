@@ -4,6 +4,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  // Function to toggle participant list visibility
+  function toggleParticipants(participantId) {
+    const participantsList = document.getElementById(participantId);
+    const arrow = document.getElementById(`arrow-${participantId}`);
+    
+    if (participantsList.style.display === "none") {
+      participantsList.style.display = "block";
+      arrow.textContent = "▼";
+    } else {
+      participantsList.style.display = "none";
+      arrow.textContent = "▶";
+    }
+  }
+
+  // Make toggleParticipants available globally for onclick handlers
+  window.toggleParticipants = toggleParticipants;
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -20,11 +37,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // Create collapsible participants list HTML with mailto links
+        let participantsHTML = "";
+        const participantId = `participants-${name.replace(/\s+/g, '-').toLowerCase()}`;
+        
+        if (details.participants && details.participants.length > 0) {
+          participantsHTML = `
+            <div style="margin-top: 10px;">
+              <div class="participants-header" onclick="toggleParticipants('${participantId}')" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <span class="dropdown-arrow" id="arrow-${participantId}">▶</span>
+                <strong>Participants (${details.participants.length}):</strong>
+              </div>
+              <div id="${participantId}" class="participants-list" style="display: none; margin-top: 8px;">
+                <ul style="margin: 0 0 0 18px; padding: 0;">
+                  ${details.participants.map(
+                    (email) =>
+                      `<li style="margin-bottom: 2px; color: #444;">
+                        <a href="mailto:${email}" style="color: #1565c0; text-decoration: underline;">${email}</a>
+                      </li>`
+                  ).join("")}
+                </ul>
+              </div>
+            </div>
+          `;
+        } else {
+          participantsHTML = `
+            <div style="margin-top: 10px;">
+              <div class="participants-header" onclick="toggleParticipants('${participantId}')" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <span class="dropdown-arrow" id="arrow-${participantId}">▶</span>
+                <strong>Participants (0):</strong>
+              </div>
+              <div id="${participantId}" class="participants-list" style="display: none; margin-top: 8px;">
+                <span style="color: #888;">No participants yet</span>
+              </div>
+            </div>
+          `;
+        }
+
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          ${participantsHTML}
         `;
 
         activitiesList.appendChild(activityCard);
